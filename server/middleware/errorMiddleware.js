@@ -1,19 +1,21 @@
 // Unsupported (404) routes
 const notFound = (req, res, next) => {
-    const error = new Error(`Not found - ${req.originalUrl}`)
-    res.status(404);
-    next(error);
-}
+  const error = new Error(`Not found - ${req.originalUrl}`);
+  error.code = 404;
+  res.status(404);
+  next(error);
+};
 
-
-// Middleware to handls Errors
+// Middleware to handle Errors
 const errorHandler = (error, req, res, next) => {
-    if(res.headerSent) {
-        return next(error)
-    }
+  if (res.headerSent) {
+    return next(error);
+  }
 
-    res.status(error.code || 500).json({message: error.message || "An unknown error occured"})
-}
+  const statusCode = error.code || error.status || 500;
+  res
+    .status(statusCode)
+    .json({ message: error.message || "An unknown error occured" });
+};
 
-
-module.exports = {notFound,errorHandler}
+module.exports = { notFound, errorHandler };
